@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Owner { // phone number of owner is identifier for Owner
+  id           String    @id @default(uuid())
+  phoneNumber  String    @unique
+  customers    Customer[]
+}
+
+model Customer { // phone number of customer is identifier for Customer
+  id           String    @id @default(uuid())
+  phoneNumber  String    @unique
+  owner        Owner     @relation(fields: [ownerPhoneNumber], references: [phoneNumber])
+  ownerPhoneNumber      String
+  conversations Conversation[]
+}
+
+model Conversation {
+  id            String       @id @default(uuid())
+  customer      Customer     @relation(fields: [customerPhoneNumber], references: [phoneNumber])
+  customerPhoneNumber    String
+  messages      Json
+  agent        Json
+}
+
+
